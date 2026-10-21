@@ -1777,12 +1777,25 @@
 					section:button({name = "Unload Menu", callback = function()
 						library:load_config(library.old_config)
 
-						for _, gui in library.guis do 
-							gui:Destroy() 
-						end 
+						-- Call script's unload callback first (cleans up ESP, aim, gun mods, etc.)
+						if library.unload_callback then
+							pcall(library.unload_callback)
+						end
 
-						for _, connection in library.connections do 
-							connection:Disconnect() 
+						for _, gui in library.guis do
+							gui:Destroy()
+						end
+
+						for _, connection in library.connections do
+							connection:Disconnect()
+						end
+
+						for _, d in library.drawings do
+							pcall(function() d:Remove() end)
+						end
+
+						for _, inst in library.instances do
+							pcall(function() inst:Destroy() end)
 						end
 
 						blur:Destroy()
