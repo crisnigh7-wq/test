@@ -2300,10 +2300,8 @@
 					return
 				end
 
-				local humanoid = character:FindFirstChildOfClass("Humanoid")
-				if not humanoid then return end
-
-				local multiplier = humanoid.MaxHealth * math.abs(math.sin(tick() * 2)) / humanoid.MaxHealth
+				-- Humanoid may be missing in the cloned character; the animation only needs a 0-1 multiplier
+				local multiplier = math.abs(math.sin(tick() * 2))
 				local color = flags[ "Health_Low" ].Color:Lerp( flags["Health_High"].Color, multiplier)
 
 				objects[ "healthbar" ].Size = UDim2.new(1, -2, multiplier, -2)
