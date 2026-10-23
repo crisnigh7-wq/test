@@ -1952,7 +1952,14 @@
 			local character = lp.Character:Clone()
 			character.Animate:Destroy()
 
-			local items = cfg.items; do 
+			-- Fix: PrimaryPart doesn't survive Clone(); set it so SetPrimaryPartCFrame works
+			if not character.PrimaryPart then
+				local hrp = character:FindFirstChild("HumanoidRootPart")
+				if not hrp then hrp = character:FindFirstChild("Torso") end
+				if hrp then character.PrimaryPart = hrp end
+			end
+
+			local items = cfg.items; do
 				items.viewportframe = library:create( "ViewportFrame" , {
 					Parent = self.holder;
 					BackgroundTransparency = 1;
@@ -2296,11 +2303,8 @@
 				local humanoid = character:FindFirstChildOfClass("Humanoid")
 				if not humanoid then return end
 
-				local multiplier = math.abs(math.sin(tick() * 2))
-				local low = flags[ "Health_Low" ]
-				local high = flags[ "Health_High" ]
-				if not low or not high or not low.Color or not high.Color then return end
-				local color = low.Color:Lerp(high.Color, multiplier)
+				local multiplier = humanoid.MaxHealth * math.abs(math.sin(tick() * 2)) / humanoid.MaxHealth
+				local color = flags[ "Health_Low" ].Color:Lerp( flags["Health_High"].Color, multiplier)
 
 				objects[ "healthbar" ].Size = UDim2.new(1, -2, multiplier, -2)
 				objects[ "healthbar" ].Position = UDim2.new(0, 1, 1 - multiplier, 1)
@@ -5945,3 +5949,4 @@
 -- 
 
 return library, themes; 
+---
