@@ -2289,15 +2289,19 @@
 			end 
 
 			cfg.change_health = function()
-				if flags[ "healthbar_holder" ] and flags[ "healthbar_holder" ].Parent ~= objects[ "holder" ] then 
-					return 
+				if flags[ "healthbar_holder" ] and flags[ "healthbar_holder" ].Parent ~= objects[ "holder" ] then
+					return
 				end
 
-				local humanoid = character.Humanoid
-				
-				local multiplier = humanoid.MaxHealth * math.abs(math.sin(tick() * 2)) / humanoid.MaxHealth
-				local color = flags[ "Health_Low" ].Color:Lerp( flags["Health_High"].Color, multiplier)
-				
+				local humanoid = character:FindFirstChildOfClass("Humanoid")
+				if not humanoid then return end
+
+				local multiplier = math.abs(math.sin(tick() * 2))
+				local low = flags[ "Health_Low" ]
+				local high = flags[ "Health_High" ]
+				if not low or not high or not low.Color or not high.Color then return end
+				local color = low.Color:Lerp(high.Color, multiplier)
+
 				objects[ "healthbar" ].Size = UDim2.new(1, -2, multiplier, -2)
 				objects[ "healthbar" ].Position = UDim2.new(0, 1, 1 - multiplier, 1)
 				objects[ "healthbar" ].BackgroundColor3 = color
@@ -2350,10 +2354,10 @@
 			end
 
 			task.spawn(function()
-				while true do 
+				while true do
 					task.wait()
-					cfg.change_health()
-				end 
+					pcall(cfg.change_health)
+				end
 			end)
 
 			return setmetatable(cfg, library)
@@ -5941,4 +5945,3 @@
 -- 
 
 return library, themes; 
----
